@@ -1,0 +1,20 @@
+platform: unitree_g1
+
+localization:
+  frontend: fast_lio2
+  loss_confirmation_ms: 500
+  search_timeout_ms: 2500
+  healthy_frames_to_resume: 3
+
+alignment:
+  global_descriptor: scan_context
+  coarse_solver: ndt
+  fine_solver: icp
+  maximum_pose_jump_m: 0.5
+  maximum_fitness: 0.35
+
+runtime:
+  p95_latency_budget_ms: 30.0
+  consume_latest_frame_only: true
+  reuse_nearest_neighbor_index: true
+  map_cache_enabled: true

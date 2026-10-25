@@ -91,6 +91,7 @@ public:
 
     [[nodiscard]] RecoveryState state() const noexcept;
     [[nodiscard]] static std::string_view name(RecoveryAuthority authority) noexcept;
+    // Same snake_case names as fork-spatial-runtime contract::name(ReasonCode).
     [[nodiscard]] static std::string_view name(RecoveryReason reason) noexcept;
 
 private:

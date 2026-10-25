@@ -6,13 +6,13 @@
 
 Unitree G1/H2 双足机器人的端侧自主导航闭环，重点是定位失效后的自动恢复。
 
-本仓库是 G1/H2 双足导航工程的脱敏公开重构。它与 [MotionSLAM_ws](https://github.com/zxinyu-robot/MotionSLAM_ws)（Unitree Go2 四足）是同一套端侧自主导航闭环在两类腿式平台上的实现：定位、规划、任务编排和安全执行都在机器人本机完成，不依赖云端或远程算力。本仓库公开的是其中的定位恢复部分。
+本仓库是 G1/H2 双足导航工程的脱敏公开重构。它与 [quadruped-crossfloor-nav-ws](https://github.com/zxinyu-robot/quadruped-crossfloor-nav-ws)（Unitree Go2 四足）是同一套端侧自主导航闭环在两类腿式平台上的实现：定位、规划、任务编排和安全执行都在机器人本机完成，不依赖云端或远程算力。本仓库公开的是其中的定位恢复部分。
 
-> On-board autonomous navigation loop for Unitree G1/H2 bipeds, focused on recovery from localization failure. Sibling of [MotionSLAM_ws](https://github.com/zxinyu-robot/MotionSLAM_ws) (Unitree Go2 quadruped).
+> On-board autonomous navigation loop for Unitree G1/H2 bipeds, focused on recovery from localization failure. Sibling of [quadruped-crossfloor-nav-ws](https://github.com/zxinyu-robot/quadruped-crossfloor-nav-ws) (Unitree Go2 quadruped).
 
 ## 两个腿式平台的对应关系
 
-| | 本仓库（双足） | MotionSLAM_ws（四足） |
+| | 本仓库（双足） | quadruped-crossfloor-nav-ws（四足） |
 |---|---|---|
 | 平台 | Unitree G1 / H2 | Unitree Go2 + Livox Mid-360 |
 | 端侧闭环 | `FAST-LIO2 → Localizer → Nav2（SCAN/PCT-Planner）→ 平台专用控制器` | `Super-LIO → PCT → SCAN → 行为树编排 → Sport API` |
@@ -20,7 +20,7 @@ Unitree G1/H2 双足机器人的端侧自主导航闭环，重点是定位失效
 | 自研 | 定位健康度判定、自动重定位与任务恢复状态机、延迟预算统计、平台配置 | 行为树编排、任务运行时、Forwarders、Sport API 适配 |
 | 二者的连接 | `RecoveryPlugin` 提供恢复建议（不直接控制机器人） | 通过 `runtime/task_runtime` 的 `RecoveryPluginHost` / `RecoveryArbiter` 接入，执行权留在行为树一侧 |
 
-本仓库的恢复状态机与 ROS 解耦，所以同一套恢复逻辑可以同时服务双足（本仓库的 G1/H2 配置）和四足（MotionSLAM_ws 中的 Go2）。
+本仓库的恢复状态机与 ROS 解耦，所以同一套恢复逻辑可以同时服务双足（本仓库的 G1/H2 配置）和四足（quadruped-crossfloor-nav-ws 中的 Go2）。
 
 ## 项目亮点
 
@@ -30,7 +30,7 @@ Unitree G1/H2 双足机器人的端侧自主导航闭环，重点是定位失效
 - 提供固定容量 P50/P95/最大延迟统计，用于约束机器人端处理预算。
 - 为 G1/H2 提供独立配置示例，平台差异放在配置里，恢复逻辑复用。
 - 核心 C++20 代码无 ROS 依赖，可单元测试；ROS 2 集成放在适配层。
-- `RecoveryPlugin` 的输入输出与 [ForkSpatial-Runtime-Engine](https://github.com/zxinyu-robot/ForkSpatial-Runtime-Engine) 的状态契约对齐，已接入 MotionSLAM_ws。
+- `RecoveryPlugin` 的输入输出与 [ForkSpatial-Runtime-Engine](https://github.com/zxinyu-robot/ForkSpatial-Runtime-Engine) 的状态契约对齐，已接入 quadruped-crossfloor-nav-ws。
 
 ## 公开实现
 

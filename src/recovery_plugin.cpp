@@ -82,11 +82,11 @@ std::string_view RecoveryPlugin::name(RecoveryAuthority authority) noexcept {
 
 std::string_view RecoveryPlugin::name(RecoveryReason reason) noexcept {
     switch (reason) {
-        case RecoveryReason::None: return "None";
-        case RecoveryReason::LocalizationLost: return "LocalizationLost";
-        case RecoveryReason::LocalizationJump: return "LocalizationJump";
+        case RecoveryReason::None: return "none";
+        case RecoveryReason::LocalizationLost: return "localization_lost";
+        case RecoveryReason::LocalizationJump: return "localization_jump";
         case RecoveryReason::RelocalizationTimeout:
-            return "RelocalizationTimeout";
+            return "relocalization_timeout";
     }
     return "Unknown";
 }

@@ -18,6 +18,7 @@ option(LNR_BUILD_DEMO "Build the recovery scenario demo" ON)
 add_library(legged_navigation_runtime
   src/relocalization_supervisor.cpp
   src/latency_window.cpp
+  src/recovery_plugin.cpp
 )
 add_library(legged_navigation::runtime ALIAS legged_navigation_runtime)
 
@@ -42,4 +43,8 @@ if(BUILD_TESTING)
   add_executable(runtime_tests tests/runtime_tests.cpp)
   target_link_libraries(runtime_tests PRIVATE legged_navigation::runtime)
   add_test(NAME runtime_tests COMMAND runtime_tests)
+
+  add_executable(recovery_plugin_tests tests/recovery_plugin_tests.cpp)
+  target_link_libraries(recovery_plugin_tests PRIVATE legged_navigation::runtime)
+  add_test(NAME recovery_plugin_tests COMMAND recovery_plugin_tests)
 endif()

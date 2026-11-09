@@ -29,3 +29,38 @@ jobs:
 
       - name: Recovery replay
         run: ./build/default/recovery_demo
+
+      - name: Terrain demo
+        run: ./build/default/terrain/terrain_demo
+
+  sensor-guard-nav:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python/sensor_guard_nav
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install -e ".[dev]"
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: pytest
+      - run: sensor-guard-nav demo --config configs/lidar_mud.json --output artifacts/ci
+
+  slam-doctor:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python/slam_doctor
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install ".[dev]"
+      - run: ruff check .
+      - run: pytest
+      - run: slam-doctor diagnose examples/nav_oscillation.jsonl --symptom NAV_OSCILLATION
+      - run: slam-doctor graph --symptom POSE_JUMP --format mermaid

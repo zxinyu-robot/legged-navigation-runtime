@@ -4,7 +4,18 @@
 [![C++20](https://img.shields.io/badge/C%2B%2B-20-00599C.svg)](https://isocpp.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Unitree G1/H2 双足机器人的端侧自主导航闭环，重点是定位失效后的自动恢复。
+腿式机器人单体自主的**故障恢复与诊断**：定位失效恢复、地形安全降级、LiDAR 污染自救和 SLAM/导航诊断，放在同一个仓库里。
+
+| 模块 | 目录 | 语言 | 作用 | 验证程度 |
+|---|---|---|---|---|
+| 定位失效恢复 | `include/` `src/` `tests/` | C++20 | `RelocalizationSupervisor` / `RecoveryPlugin`，只输出恢复建议 | 单元测试 + 合成回放；已接入 quadruped-crossfloor-nav-ws |
+| 地形状态与安全降级 | `terrain/` | C++20 | 坡度/粗糙度/置信度 → 降速、停车分级 | 单元测试 + 合成回放 |
+| LiDAR 污染定位自救 | `python/sensor_guard_nav/` | Python 3.11+ | 故障注入 → 隔离 → 安全降级 → 恢复门控 | 单元测试 + 合成数据 |
+| SLAM/导航诊断 | `python/slam_doctor/` | Python 3.10+ | 契约检查 + 故障图“症状→假设→Probe→修复”排序 | 单元测试 + 示例日志 |
+
+`terrain/`、`python/sensor_guard_nav/`、`python/slam_doctor/` 分别由原仓库 [legged-terrain-state](https://github.com/zxinyu-robot/legged-terrain-state)、[SensorGuardNav-Runtime](https://github.com/zxinyu-robot/SensorGuardNav-Runtime)、[SlamDoctor-Runtime](https://github.com/zxinyu-robot/SlamDoctor-Runtime) 并入，原仓库已归档。
+
+以下是定位失效恢复部分（Unitree G1/H2 双足端侧导航闭环）的说明。
 
 本仓库是 G1/H2 双足导航工程的脱敏公开重构。它与 [quadruped-crossfloor-nav-ws](https://github.com/zxinyu-robot/quadruped-crossfloor-nav-ws)（Unitree Go2 四足）是同一套端侧自主导航闭环在两类腿式平台上的实现：定位、规划、任务编排和安全执行都在机器人本机完成，不依赖云端或远程算力。本仓库公开的是其中的定位恢复部分。
 
@@ -78,9 +89,16 @@ cmake --preset default
 cmake --build --preset default
 ctest --preset default --output-on-failure
 ./build/default/recovery_demo
+./build/default/terrain/terrain_demo        # 地形安全降级回放；-DLNR_BUILD_TERRAIN=OFF 可不构建
+
+# Python 模块各自独立安装
+cd python/sensor_guard_nav && pip install -e ".[dev]" && pytest
+sensor-guard-nav demo --config configs/lidar_mud.json --output artifacts/demo
+cd ../slam_doctor && pip install -e ".[dev]" && pytest
+slam-doctor diagnose examples/nav_oscillation.jsonl --symptom NAV_OSCILLATION
 ```
 
-演示输出：
+定位恢复演示输出：
 
 ```text
 relocalization replay
@@ -123,6 +141,10 @@ tests/
 config/
   g1.yaml
   h2.yaml
+terrain/                 地形状态契约与安全降级（C++20，CMake 子目录）
+python/
+  sensor_guard_nav/      LiDAR 污染定位自救（Python 包 sensor-guard-nav）
+  slam_doctor/           SLAM/导航诊断 CLI（Python 包 esis-diagnostics，命令 slam-doctor）
 docs/
   system-design.md
   benchmark-methodology.md

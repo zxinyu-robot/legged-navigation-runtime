@@ -14,6 +14,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(LNR_BUILD_DEMO "Build the recovery scenario demo" ON)
+option(LNR_BUILD_TERRAIN "Build the terrain state contract and fail-safe degradation core" ON)
 
 add_library(legged_navigation_runtime
   src/relocalization_supervisor.cpp
@@ -47,4 +48,8 @@ if(BUILD_TESTING)
   add_executable(recovery_plugin_tests tests/recovery_plugin_tests.cpp)
   target_link_libraries(recovery_plugin_tests PRIVATE legged_navigation::runtime)
   add_test(NAME recovery_plugin_tests COMMAND recovery_plugin_tests)
+endif()
+
+if(LNR_BUILD_TERRAIN)
+  add_subdirectory(terrain)
 endif()
